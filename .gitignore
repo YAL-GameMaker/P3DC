@@ -1,0 +1,13 @@
+.vs/
+*/Configs/*/*
+*/extensions/*/*.cpp
+*/extensions/*/*.dll
+*/Release/
+Release/
+export/*.gmez
+export/*.png
+export/*.gmz
+*.sdf
+help.rtf
+/P3DC.VC.db
+/P3DC.VC.VC.opendb
