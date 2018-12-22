@@ -113,6 +113,41 @@ char bytes[128];
         A=VV2; B=(VV0-VV2)*D2; C=(VV1-VV2)*D2; X0=D2-D0; X1=D2-D1; \
     }else{return 0;}                                                \
 }
+
+// interop
+struct buffer {
+	char* pos;
+	public:
+	buffer(void* origin) : pos((char*)origin) {}
+	template<class T> T read() {
+		T r = *(T*)pos;
+		pos += sizeof(T);
+		return r;
+	}
+	template<class T> void write(T val) {
+		*(T*)pos = val;
+		pos += sizeof(T);
+	}
+	//
+	char* read_string() {
+		char* r = pos;
+		while (*pos != 0) pos++;
+		pos++;
+		return r;
+	}
+	void write_string(const char* s) {
+		for (int i = 0; s[i] != 0; i++) write<char>(s[i]);
+		write<char>(0);
+	}
+	//
+	template<class T> T* ptr() {
+		return (T*)pos;
+	}
+	void skip(int amt) {
+		pos += amt;
+	}
+};
+
 /*
 Triangle/triangle intersection test routine,
 by Tomas Moller, 1997.
@@ -831,6 +866,50 @@ export double p3dc_add_model(char* arg0, double arg1, double arg2, double arg3) 
 	return (double)tlid;
 }
 
+struct p3dc_add_triangles_data {
+	double x1, y1, z1;
+	double x2, y2, z2;
+	double x3, y3, z3;
+};
+///
+struct p3dc_matrix {
+	double xx, yx, zx, px;
+	double xy, yy, zy, py;
+	double xz, yz, zz, pz;
+	double size;
+};
+/// -> TLID
+export double p3dc_add_triangles(p3dc_add_triangles_data* triangles_address, double num_triangles, p3dc_matrix* matrix_address) {
+	int countvertex = 0;
+	unsigned int tlid = temp_vector.size();
+	int n = (int)num_triangles;
+	//
+	p3dc_matrix* m = matrix_address;
+	double mxx = m->xx, myx = m->yx, mzx = m->zx, mpx = m->px;
+	double mxy = m->xy, myy = m->yy, mzy = m->zy, mpy = m->py;
+	double mxz = m->xz, myz = m->yz, mzz = m->zz, mpz = m->pz;
+	//
+	buffer buf(triangles_address);
+	for (int i = 0; i < n; i++) {
+		p3dc_add_triangles_data* tri = buf.ptr<p3dc_add_triangles_data>();
+		double tx1 = tri->x1, ty1 = tri->y1, tz1 = tri->z1;
+		double tx2 = tri->x2, ty2 = tri->y2, tz2 = tri->z2;
+		double tx3 = tri->x3, ty3 = tri->y3, tz3 = tri->z3;
+		mat(
+			tx1*mxx + ty1*myx + tz1*mzx + mpx,
+			tx1*mxy + ty1*myy + tz1*mzy + mpy,
+			tx1*mxz + ty1*myz + tz1*mzz + mpz,
+			tx2*mxx + ty2*myx + tz1*mzx + mpx,
+			tx2*mxy + ty2*myy + tz1*mzy + mpy,
+			tx2*mxz + ty2*myz + tz1*mzz + mpz,
+			tx3*mxx + ty3*myx + tz1*mzx + mpx,
+			tx3*mxy + ty3*myy + tz1*mzy + mpy,
+			tx3*mxz + ty3*myz + tz1*mzz + mpz
+		);
+		buf.skip(sizeof(p3dc_add_triangles_data));
+	}
+	return (double)tlid;
+}
 
 //************************************************************************
 //Overwriting Functions                                                  *

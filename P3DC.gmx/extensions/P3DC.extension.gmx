@@ -280,6 +280,19 @@
           </args>
         </function>
         <function>
+          <name>p3dc_add_triangles</name>
+          <externalName>p3dc_add_triangles</externalName>
+          <kind>1</kind>
+          <help>p3dc_add_triangles(triangles_address, num_triangles, matrix_address) -&gt; TLID</help>
+          <returnType>2</returnType>
+          <argCount>3</argCount>
+          <args>
+            <arg>1</arg>
+            <arg>2</arg>
+            <arg>1</arg>
+          </args>
+        </function>
+        <function>
           <name>p3dc_begin_overwrite</name>
           <externalName>p3dc_begin_overwrite</externalName>
           <kind>1</kind>
@@ -597,6 +610,71 @@
         <constant>
           <name>p3d_triangle_index_id</name>
           <value>12</value>
+          <hidden>0</hidden>
+        </constant>
+        <constant>
+          <name>p3dc_matrix_xx</name>
+          <value>0</value>
+          <hidden>0</hidden>
+        </constant>
+        <constant>
+          <name>p3dc_matrix_yx</name>
+          <value>8</value>
+          <hidden>0</hidden>
+        </constant>
+        <constant>
+          <name>p3dc_matrix_zx</name>
+          <value>16</value>
+          <hidden>0</hidden>
+        </constant>
+        <constant>
+          <name>p3dc_matrix_px</name>
+          <value>24</value>
+          <hidden>0</hidden>
+        </constant>
+        <constant>
+          <name>p3dc_matrix_xy</name>
+          <value>32</value>
+          <hidden>0</hidden>
+        </constant>
+        <constant>
+          <name>p3dc_matrix_yy</name>
+          <value>40</value>
+          <hidden>0</hidden>
+        </constant>
+        <constant>
+          <name>p3dc_matrix_zy</name>
+          <value>48</value>
+          <hidden>0</hidden>
+        </constant>
+        <constant>
+          <name>p3dc_matrix_py</name>
+          <value>56</value>
+          <hidden>0</hidden>
+        </constant>
+        <constant>
+          <name>p3dc_matrix_xz</name>
+          <value>64</value>
+          <hidden>0</hidden>
+        </constant>
+        <constant>
+          <name>p3dc_matrix_yz</name>
+          <value>72</value>
+          <hidden>0</hidden>
+        </constant>
+        <constant>
+          <name>p3dc_matrix_zz</name>
+          <value>80</value>
+          <hidden>0</hidden>
+        </constant>
+        <constant>
+          <name>p3dc_matrix_pz</name>
+          <value>88</value>
+          <hidden>0</hidden>
+        </constant>
+        <constant>
+          <name>p3dc_matrix_size</name>
+          <value>96</value>
           <hidden>0</hidden>
         </constant>
       </constants>
