@@ -49,11 +49,9 @@ what ever you please with it.
 
 ~Have Fun, and enjoy!
 */
-#define WIN32_LEAN_AND_MEAN
-#define _CRT_SECURE_NO_WARNINGS
 #include <cmath>
 #include <vector>
-#include <windows.h>
+//#include <windows.h> // it's in stdafx
 #include <stdio.h>
 using std::vector;
 
@@ -80,7 +78,7 @@ xpoint, ypoint, zpoint, Cx, Cy, Cz, Sx, Sy, Sz, Cx2, Cy2, Cz2, Sx2, Sy2, Sz2, ad
 char bytes[128];
 
 //Pre-Processors
-#define export extern "C" __declspec (dllexport)
+#define export extern "C" __declspec(dllexport)
 #define FABS(x) ((double)fabs(x))
 #define EPSILON 0.000001
 #define CROSS(dest,v1,v2)                      \
@@ -311,20 +309,32 @@ void mat(double x1, double y1, double z1, double x2, double y2, double z2, doubl
 	temp_vector.push_back(normalz);
 	temp_vector.push_back(addingtriangleid);
 }
-
-export double gmn() {//Get # of Model models (Get Model Number)
+/// -> total number of models
+export double p3dc_get_models() {//Get # of Model models (Get Model Number)
 	return G_modellist.size();
 }
-export double gmt(double arg0) {//Model Get Triangles
-	return G_modellist[(int)arg0].size() / 13;
+/// -> number of polygons in model
+export double p3dc_get_triangles(double model_id) {//Model Get Triangles
+	return G_modellist[(int)model_id].size() / 13;
 }
-export double gms(double arg0, double arg1) {//Get split model ID
+/// -> id of the split model at X,Y
+export double p3dc_get_splitid(double arg0, double arg1) {//Get split model ID
 	return (double)p3dc_splitmodels[(int)arg0 / splitregionx][(int)arg1 / splitregiony];
 }
-export double gtr(double arg0) {//Get Triangle Data
-	return tridata[(int)arg0];
+///
+enum class p3d_triangle_index {
+	x1, y1, z1,
+	x2, y2, z2,
+	x3, y3, z3,
+	nx, ny, nz,
+	id,
+};
+/// -> 
+export double p3dc_triangle_data(double index) {//Get Triangle Data
+	return tridata[(int)index];
 }
-export double gtm() {//The triangle hit
+/// -> mask of last triangle hit (by a ray, using one of the raycasting functions)
+export double p3dc_get_lastmask() {//The triangle hit
 	return trianglehit;
 }
 //************************************************************************
@@ -407,36 +417,40 @@ void int_apo(double x1, double y1, double z1, double x2, double y2, double z2, d
 		mat(a + e, b + f, z1, a, b, z2, a + c, b + d, z1);
 	}
 }
-
-export double bdm() {//Begin Define Model
+/// -> model_id
+export double p3dc_begin_model() {//Begin Define Model
 	temp_vector.clear();
 	return G_modellist.size();
 }
-export double brm(double arg0) {//Begin Replace Model
+/// -> model_id
+export double p3dc_begin_replace(double model_id) {//Begin Replace Model
 	temp_vector.clear();
-	G_replacenum = arg0;
+	G_replacenum = model_id;
 	return G_replacenum;
 }
-export double edm() {//End Define Model
+/// -> number of triangles
+export double p3dc_end_model() {//End Define Model
 	G_modellist.push_back(temp_vector);
 	double size = (double)(temp_vector.size() / 13);
 	temp_vector.clear();
 	return size;
 }
-export double erm() {//End Replace Model
+/// -> success? (always)
+export double p3dc_end_replace() {//End Replace Model
 	temp_vector.clear();
 	return 1;
 }
-export double bs3(double arg0, double arg1, double arg2, double arg3, double arg4, double arg5) {//SPLIT THE MODEL (MUCH FASTER COLLISIONS)
+/// *split define number of times to split at X/Y
+export double p3dc_split_model(double model_id, double model_width, double model_height, double xsplit, double ysplit, double extraspace) {//SPLIT THE MODEL (MUCH FASTER COLLISIONS)
 	double width, height, xreg, yreg, space, x1, x2, y1, y2, tx1, tx2, tx3, ty1, ty2, ty3, tz1, tz2, tz3, xmin, xmax, ymin, ymax, nx, ny, nz, tid;
-	unsigned int modnum = (unsigned int)arg0;
-	width = arg1;
-	height = arg2;
-	xreg = arg3;
-	yreg = arg4;
-	space = arg5;
-	splitregionx = (int)(arg1 / arg3);
-	splitregiony = (int)(arg2 / arg4);
+	unsigned int modnum = (unsigned int)model_id;
+	width = model_width;
+	height = model_height;
+	xreg = xsplit;
+	yreg = ysplit;
+	space = extraspace;
+	splitregionx = (int)(model_width / xsplit);
+	splitregiony = (int)(model_height / ysplit);
 
 
 	for (int xx = 0; xx<(int)xreg; xx++) {
@@ -503,7 +517,8 @@ export double bs3(double arg0, double arg1, double arg2, double arg3, double arg
 	hassplit = 1;
 	return 1;
 }
-export double stm(double arg0) {//Set the triangles to be added id
+///
+export double p3dc_set_trianglemask(double arg0) {//Set the triangles to be added id
 	addingtriangleid = arg0;
 	return 1;
 }
@@ -512,10 +527,10 @@ export double stm(double arg0) {//Set the triangles to be added id
 //Add to the collision model                                             *
 //************************************************************************
 
-export double mat_exported(double arg0, double arg1, double arg2, double arg3, double arg4,
-	double arg5, double arg6, double arg7, double arg8) {//Add a Triangle
+/// -> triangle location identifier
+export double p3dc_add_triangle(double x1, double y1, double z1, double x2, double y2,
+	double z2, double x3, double y3, double z3) {//Add a Triangle
 														 //[X1,Y1,Z1,X2,Y2,Z2,X3,Y3,Z3]
-	double x1 = arg0, y1 = arg1, z1 = arg2, x2 = arg3, y2 = arg4, z2 = arg5, x3 = arg6, y3 = arg7, z3 = arg8;
 	calc_normals(x1, y1, z1, x2, y2, z2, x3, y3, z3);
 	temp_vector.push_back(x1);
 	temp_vector.push_back(y1);
@@ -532,20 +547,23 @@ export double mat_exported(double arg0, double arg1, double arg2, double arg3, d
 	temp_vector.push_back(addingtriangleid);
 	return temp_vector.size() - 13;
 }
-export double apw(double arg0, double arg1, double arg2, double arg3, double arg4, double arg5) {//Add a Wall
+/// -> triangle location identifier
+export double p3dc_add_wall(double arg0, double arg1, double arg2, double arg3, double arg4, double arg5) {//Add a Wall
 																								 //double x1, double y1, double z1, double x2, double y2, double z2
 	double x1 = arg0, y1 = arg1, z1 = arg2, x2 = arg3, y2 = arg4, z2 = arg5;
 	mat(x1, y1, z1, x2, y2, z1, x2, y2, z2);
 	mat(x2, y2, z2, x1, y1, z1, x1, y1, z2);
 	return temp_vector.size() - 26;//2*13
 }
-export double apf(double arg0, double arg1, double arg2, double arg3, double arg4, double arg5) {//Add a Floor
+/// -> triangle location identifier
+export double p3dc_add_floor(double arg0, double arg1, double arg2, double arg3, double arg4, double arg5) {//Add a Floor
 	double x1 = arg0, y1 = arg1, z1 = arg2, x2 = arg3, y2 = arg4, z2 = arg5;
 	mat(x1, y1, z1, x2, y1, z2, x2, y2, z2);
 	mat(x2, y2, z2, x1, y1, z1, x1, y2, z1);
 	return temp_vector.size() - 26;//2*13
 }
-export double apb(double arg0, double arg1, double arg2, double arg3, double arg4, double arg5) {//Add a Block
+/// -> triangle location identifier
+export double p3dc_add_block(double arg0, double arg1, double arg2, double arg3, double arg4, double arg5) {//Add a Block
 	double x1 = arg0, y1 = arg1, z1 = arg2, x2 = arg3, y2 = arg4, z2 = arg5;
 	mat(x1, y2, z1, x1, y2, z2, x2, y2, z1);
 	mat(x2, y2, z2, x2, y2, z1, x1, y2, z2);
@@ -561,18 +579,11 @@ export double apb(double arg0, double arg1, double arg2, double arg3, double arg
 	mat(x2, y1, z1, x1, y2, z1, x2, y2, z1);
 	return temp_vector.size() - 156;//12*13
 }
-export double apc(double arg0, double arg1, double arg2, double arg3, double arg4, double arg5, double arg6, double arg7) {//Add a Cylinder
+/// -> triangle location identifier
+export double p3dc_add_cylinder(double x1, double y1, double z1, double x2, double y2, double z2, double closed, double steps) {//Add a Cylinder
 																														   //double x1, double y1, double z1, double x2, double y2, double z2, double closed, double steps
-	double a, b, c, d, e, f, g, h, r, s, x1, y1, z1, x2, y2, z2, closed, steps;
+	double a, b, c, d, e, f, g, h, r, s;
 	unsigned int tlid = temp_vector.size();
-	x1 = arg0;
-	y1 = arg1;
-	z1 = arg2;
-	x2 = arg3;
-	y2 = arg4;
-	z2 = arg5;
-	closed = arg6;
-	steps = arg7;
 	a = x1 + (x2 - x1) / 2;
 	b = y1 + (y2 - y1) / 2;
 	r = FABS(x2 - x1) / 2;
@@ -601,7 +612,8 @@ export double apc(double arg0, double arg1, double arg2, double arg3, double arg
 
 	return (double)tlid;
 }
-export double apo(double arg0, double arg1, double arg2, double arg3, double arg4, double arg5, double arg6, double arg7) {//Add a Cone
+/// -> triangle location identifier
+export double p3dc_add_cone(double arg0, double arg1, double arg2, double arg3, double arg4, double arg5, double arg6, double arg7) {//Add a Cone
 																														   //double x1, double y1, double z1, double x2, double y2, double z2, double closed, double steps
 	double a, b, c, d, e, f, g, h, r, s, x1, y1, z1, x2, y2, z2, closed, steps;
 	unsigned int tlid = temp_vector.size();
@@ -638,7 +650,8 @@ export double apo(double arg0, double arg1, double arg2, double arg3, double arg
 	}
 	return (double)tlid;
 }
-export double apm(char* arg0, double arg1, double arg2, double arg3) {//Add An External Model (.d3d)
+/// -> triangle location identifier
+export double p3dc_add_model(char* arg0, double arg1, double arg2, double arg3) {//Add An External Model (.d3d)
 	int countvertex = 0;
 	unsigned int tlid = temp_vector.size();
 	//char *fname, double xv, double yv, double zv, Xrot,Yrot,Zrot (in RADIANS)
@@ -822,17 +835,20 @@ export double apm(char* arg0, double arg1, double arg2, double arg3) {//Add An E
 //************************************************************************
 //Overwriting Functions                                                  *
 //************************************************************************
-export double obd(double arg0, double arg1) {//Begin Overwriting
-	ow_mod = (unsigned int)arg0;
-	ow_tri = (unsigned int)arg1;
+///
+export double p3dc_begin_overwrite(double model_id, double tlid) {//Begin Overwriting
+	ow_mod = (unsigned int)model_id;
+	ow_tri = (unsigned int)tlid;
 	return 1;
 }
-export double oed() {//End Overwriting
+///
+export double p3dc_end_overwrite() {//End Overwriting
 	ow_mod = 0;
 	ow_tri = 0;
 	return 1;
 }
-export double opt(double arg0, double arg1, double arg2, double arg3, double arg4,
+/// ->TLID
+export double p3dc_overwrite_triangle(double arg0, double arg1, double arg2, double arg3, double arg4,
 	double arg5, double arg6, double arg7, double arg8) {//Overwrite a single triangle
 	G_modellist[ow_mod][ow_tri] = arg0;
 	G_modellist[ow_mod][ow_tri + 1] = arg1;
@@ -852,36 +868,40 @@ export double opt(double arg0, double arg1, double arg2, double arg3, double arg
 	ow_tri += 13;
 	return ow_tri;
 }
-export double opb(double arg0, double arg1, double arg2, double arg3, double arg4, double arg5) {//Overwrite a Block
+/// 
+export double p3dc_overwrite_block(double arg0, double arg1, double arg2, double arg3, double arg4, double arg5) {//Overwrite a Block
 	double x1 = arg0, y1 = arg1, z1 = arg2, x2 = arg3, y2 = arg4, z2 = arg5;
-	opt(x1, y2, z1, x1, y2, z2, x2, y2, z1);
-	opt(x2, y2, z2, x2, y2, z1, x1, y2, z2);
-	opt(x2, y1, z1, x1, y1, z2, x1, y1, z1);
-	opt(x2, y1, z2, x1, y1, z2, x2, y1, z1);
-	opt(x1, y1, z1, x1, y1, z2, x1, y2, z1);
-	opt(x1, y2, z1, x1, y1, z2, x1, y2, z2);
-	opt(x2, y1, z2, x2, y1, z1, x2, y2, z1);
-	opt(x2, y1, z2, x2, y2, z1, x2, y2, z2);
-	opt(x1, y1, z2, x2, y1, z2, x1, y2, z2);
-	opt(x1, y2, z2, x2, y1, z2, x2, y2, z2);
-	opt(x2, y1, z1, x1, y1, z1, x1, y2, z1);
-	opt(x2, y1, z1, x1, y2, z1, x2, y2, z1);
+	p3dc_overwrite_triangle(x1, y2, z1, x1, y2, z2, x2, y2, z1);
+	p3dc_overwrite_triangle(x2, y2, z2, x2, y2, z1, x1, y2, z2);
+	p3dc_overwrite_triangle(x2, y1, z1, x1, y1, z2, x1, y1, z1);
+	p3dc_overwrite_triangle(x2, y1, z2, x1, y1, z2, x2, y1, z1);
+	p3dc_overwrite_triangle(x1, y1, z1, x1, y1, z2, x1, y2, z1);
+	p3dc_overwrite_triangle(x1, y2, z1, x1, y1, z2, x1, y2, z2);
+	p3dc_overwrite_triangle(x2, y1, z2, x2, y1, z1, x2, y2, z1);
+	p3dc_overwrite_triangle(x2, y1, z2, x2, y2, z1, x2, y2, z2);
+	p3dc_overwrite_triangle(x1, y1, z2, x2, y1, z2, x1, y2, z2);
+	p3dc_overwrite_triangle(x1, y2, z2, x2, y1, z2, x2, y2, z2);
+	p3dc_overwrite_triangle(x2, y1, z1, x1, y1, z1, x1, y2, z1);
+	p3dc_overwrite_triangle(x2, y1, z1, x1, y2, z1, x2, y2, z1);
 	return (double)ow_tri;
 }
-export double opw(double arg0, double arg1, double arg2, double arg3, double arg4, double arg5) {//Add a Wall
+///
+export double p3dc_overwrite_wall(double arg0, double arg1, double arg2, double arg3, double arg4, double arg5) {//Add a Wall
 																								 //double x1, double y1, double z1, double x2, double y2, double z2
 	double x1 = arg0, y1 = arg1, z1 = arg2, x2 = arg3, y2 = arg4, z2 = arg5;
-	opt(x1, y1, z1, x2, y2, z1, x2, y2, z2);
-	opt(x2, y2, z2, x1, y1, z1, x1, y1, z2);
+	p3dc_overwrite_triangle(x1, y1, z1, x2, y2, z1, x2, y2, z2);
+	p3dc_overwrite_triangle(x2, y2, z2, x1, y1, z1, x1, y1, z2);
 	return (double)ow_tri;
 }
-export double opf(double arg0, double arg1, double arg2, double arg3, double arg4, double arg5) {//Add a Floor
+///
+export double p3dc_overwrite_floor(double arg0, double arg1, double arg2, double arg3, double arg4, double arg5) {//Add a Floor
 	double x1 = arg0, y1 = arg1, z1 = arg2, x2 = arg3, y2 = arg4, z2 = arg5;
-	opt(x1, y1, z1, x2, y1, z2, x2, y2, z2);
-	opt(x2, y2, z2, x1, y1, z1, x1, y2, z1);
+	p3dc_overwrite_triangle(x1, y1, z1, x2, y1, z2, x2, y2, z2);
+	p3dc_overwrite_triangle(x2, y2, z2, x1, y1, z1, x1, y2, z1);
 	return (double)ow_tri;
 }
-export double opc(double arg0, double arg1, double arg2, double arg3, double arg4, double arg5, double arg6, double arg7) {//Add a Cylinder
+///
+export double p3dc_overwrite_cylinder(double arg0, double arg1, double arg2, double arg3, double arg4, double arg5, double arg6, double arg7) {//Add a Cylinder
 																														   //double x1, double y1, double z1, double x2, double y2, double z2, double closed, double steps
 	double a, b, c, d, e, f, g, h, r, s, x1, y1, z1, x2, y2, z2, closed, steps;
 	unsigned int tlid = temp_vector.size();
@@ -905,8 +925,8 @@ export double opc(double arg0, double arg1, double arg2, double arg3, double arg
 			f = lengthdir_x(r, (i - 1) * 360 / steps);
 			g = lengthdir_y(s, i * 360 / steps);
 			h = lengthdir_y(s, (i - 1) * 360 / steps);
-			opt(a + c, b + d, z1, a + e, b + g, z1, a + f, b + h, z1);
-			opt(a + c, b + d, z2, a + e, b + g, z2, a + f, b + h, z2);
+			p3dc_overwrite_triangle(a + c, b + d, z1, a + e, b + g, z1, a + f, b + h, z1);
+			p3dc_overwrite_triangle(a + c, b + d, z2, a + e, b + g, z2, a + f, b + h, z2);
 		}
 	}
 
@@ -915,13 +935,14 @@ export double opc(double arg0, double arg1, double arg2, double arg3, double arg
 		d = lengthdir_y(s, (i + 1) * 360 / steps);
 		e = lengthdir_x(r, i * 360 / steps);
 		f = lengthdir_y(s, i * 360 / steps);
-		opt(a + e, b + f, z1, a + e, b + f, z2, a + c, b + d, z1);
-		opt(a + e, b + f, z2, a + c, b + d, z1, a + c, b + d, z2);
+		p3dc_overwrite_triangle(a + e, b + f, z1, a + e, b + f, z2, a + c, b + d, z1);
+		p3dc_overwrite_triangle(a + e, b + f, z2, a + c, b + d, z1, a + c, b + d, z2);
 	}
 
 	return (double)tlid;
 }
-export double opo(double arg0, double arg1, double arg2, double arg3, double arg4, double arg5, double arg6, double arg7) {//Add a Cone
+///
+export double p3dc_overwrite_cone(double arg0, double arg1, double arg2, double arg3, double arg4, double arg5, double arg6, double arg7) {//Add a Cone
 																														   //double x1, double y1, double z1, double x2, double y2, double z2, double closed, double steps
 	double a, b, c, d, e, f, g, h, r, s, x1, y1, z1, x2, y2, z2, closed, steps;
 	unsigned int tlid = temp_vector.size();
@@ -945,7 +966,7 @@ export double opo(double arg0, double arg1, double arg2, double arg3, double arg
 			f = lengthdir_x(r, (i - 1) * 360 / steps);
 			g = lengthdir_y(s, i * 360 / steps);
 			h = lengthdir_y(s, (i - 1) * 360 / steps);
-			opt(a + c, b + d, z1, a + e, b + g, z1, a + f, b + h, z1);
+			p3dc_overwrite_triangle(a + c, b + d, z1, a + e, b + g, z1, a + f, b + h, z1);
 		}
 	}
 
@@ -954,14 +975,15 @@ export double opo(double arg0, double arg1, double arg2, double arg3, double arg
 		d = lengthdir_y(s, (i + 1) * 360 / steps);
 		e = lengthdir_x(r, i * 360 / steps);
 		f = lengthdir_y(s, i * 360 / steps);
-		opt(a + e, b + f, z1, a, b, z2, a + c, b + d, z1);
+		p3dc_overwrite_triangle(a + e, b + f, z1, a, b, z2, a + c, b + d, z1);
 	}
 	return (double)tlid;
 }
 //************************************************************************
 //Collision Checking (MC=collision, MR=raycast)                          *
 //************************************************************************
-export double mcs(double arg0, double arg1, double arg2, double arg3, double arg4, double arg5, double arg6, double arg7) {//Model Check
+/// -> hit?
+export double p3dc_check(double arg0, double arg1, double arg2, double arg3, double arg4, double arg5, double arg6, double arg7) {//Model Check
 	int mod1 = (int)arg0, mod2 = (int)arg4;
 	double mod1_xpos = arg1 - arg5, mod1_ypos = arg2 - arg6, mod1_zpos = arg3 - arg7,
 		t1p1[3], t1p2[3], t1p3[3], t2p1[3], t2p2[3], t2p3[3];
@@ -993,7 +1015,8 @@ export double mcs(double arg0, double arg1, double arg2, double arg3, double arg
 	return 0;
 }
 //Model Check Rotation (Modify model1 pos by difference in movement) - faster than actually moving both
-export double mcr(double arg0, double arg1, double arg2, double arg3, double arg4, double arg5, double arg6, double arg7,
+///
+export double p3dc_check_rotation(double arg0, double arg1, double arg2, double arg3, double arg4, double arg5, double arg6, double arg7,
 	double arg8, double arg9, double arg10, double arg11, double arg12, double arg13) {
 	int mod1 = (int)arg0, mod2 = (int)arg4;
 	double mod1_xpos = arg1 - arg5, mod1_ypos = arg2 - arg6, mod1_zpos = arg3 - arg7, rotx1 = arg8, roty1 = arg9,
@@ -1045,7 +1068,8 @@ export double mcr(double arg0, double arg1, double arg2, double arg3, double arg
 	return 0;
 }
 //Model Check Split
-export double mc3(double arg0, double arg1, double arg2, double arg3) {
+///
+export double p3dc_check_split(double arg0, double arg1, double arg2, double arg3) {
 	//double xregion, double yregion, double mod1, double mod1_xpos, double mod1_ypos, double mod1_zpos
 	int xr = (int)(arg1 / splitregionx), yr = (int)(arg2 / splitregionx), mod1 = (int)arg0, mod2 = p3dc_splitmodels[xr][yr];
 	double mod1_xpos = arg1, mod1_ypos = arg2, mod1_zpos = arg3, t1p1[3], t1p2[3], t1p3[3], t2p1[3], t2p2[3], t2p3[3];
@@ -1077,7 +1101,8 @@ export double mc3(double arg0, double arg1, double arg2, double arg3) {
 	return 0;
 }
 //Model Ray
-export double mrs(double arg0, double arg1, double arg2, double arg3, double arg4, double arg5, double arg6, double arg7, double arg8, double arg9) {
+///
+export double p3dc_ray(double arg0, double arg1, double arg2, double arg3, double arg4, double arg5, double arg6, double arg7, double arg8, double arg9) {
 
 	int mod1 = (int)arg0;
 	double xorig = arg4 - arg1, yorig = arg5 - arg2, zorig = arg6 - arg3, xdir = arg7, ydir = arg8, zdir = arg9,
@@ -1117,7 +1142,8 @@ export double mrs(double arg0, double arg1, double arg2, double arg3, double arg
 	return dist;
 }
 //Model Ray First (No moving, much faster, first hit is returned)
-export double mrf(double arg0, double arg1, double arg2, double arg3, double arg4, double arg5, double arg6) {
+///
+export double p3dc_ray_first(double arg0, double arg1, double arg2, double arg3, double arg4, double arg5, double arg6) {
 	int mod1 = (int)arg0;
 	double xorig = arg1, yorig = arg2, zorig = arg3, xdir = arg4, ydir = arg5, zdir = arg6, t_1_p_1[3], t_1_p_2[3], t_1_p_3[3], t = 0, orig[3] = { xorig,yorig,zorig }, dir[3] = { xdir,ydir,zdir };
 	for (unsigned int ML1 = 0; ML1<G_modellist[mod1].size(); ML1 += 13) {
@@ -1152,7 +1178,8 @@ export double mrf(double arg0, double arg1, double arg2, double arg3, double arg
 	return 10000000;
 }
 //Model Ray Split
-export double mr3(double arg0, double arg1, double arg2, double arg3, double arg4, double arg5) {
+///
+export double p3dc_ray_split(double arg0, double arg1, double arg2, double arg3, double arg4, double arg5) {
 	double xr = arg0 / splitregionx, yr = arg1 / splitregionx, xorig = arg0, yorig = arg1, zorig = arg2, xdir = arg3, ydir = arg4, zdir = arg5,
 		t_1_p_1[3], t_1_p_2[3], t_1_p_3[3], t = 0, orig[3] = { xorig,yorig,zorig }, dir[3] = { xdir,ydir,zdir }, dist = 10000000;
 	int mod1 = p3dc_splitmodels[(int)xr][(int)yr];
@@ -1192,7 +1219,8 @@ export double mr3(double arg0, double arg1, double arg2, double arg3, double arg
 	return dist;
 }
 //Model Ray Rotation (Modify ray position if model moves),rotx, roty, rotz are model rotations, origins are ray origins
-export double mrr(double arg0, double arg1, double arg2, double arg3, double arg4, double arg5, double arg6, double arg7, double arg8, double arg9) {
+///
+export double p3dc_set_modrot(double arg0, double arg1, double arg2, double arg3, double arg4, double arg5, double arg6, double arg7, double arg8, double arg9) {
 	//double mod1, double xorig, double yorig, double zorig, double xdir, double ydir, double zdir, double rotx, double roty, double rotz
 	int mod1 = (int)arg0;
 	double xorig = arg4 - arg1, yorig = arg5 - arg2, zorig = arg6 - arg3, xdir = arg7, ydir = arg8, zdir = arg9, rotx = vecrotx, roty = vecroty, rotz = vecrotz,
@@ -1247,12 +1275,6 @@ export double mrr(double arg0, double arg1, double arg2, double arg3, double arg
 	return dist;
 }
 //Set model rotation
-export double smr(double arg0, double arg1, double arg2) {
-	vecrotx = arg0;
-	vecroty = arg1;
-	vecrotz = arg2;
-	return 1;
-}
 
 BOOL APIENTRY DllMain(HINSTANCE aInstanceHandle, int aReason, int aReserved) {
 	switch (aReason) {
