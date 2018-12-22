@@ -280,10 +280,10 @@
           </args>
         </function>
         <function>
-          <name>p3dc_add_triangles</name>
-          <externalName>p3dc_add_triangles</externalName>
-          <kind>1</kind>
-          <help>p3dc_add_triangles(triangles_address, num_triangles, matrix_address) -&gt; TLID</help>
+          <name>p3dc_add_triangles_raw</name>
+          <externalName>p3dc_add_triangles_raw</externalName>
+          <kind>11</kind>
+          <help></help>
           <returnType>2</returnType>
           <argCount>3</argCount>
           <args>
@@ -692,7 +692,21 @@
         </Config>
       </ConfigOptions>
       <ProxyFiles/>
-      <functions/>
+      <functions>
+        <function>
+          <name>p3dc_add_triangles</name>
+          <externalName>p3dc_add_triangles</externalName>
+          <kind>2</kind>
+          <help>p3dc_add_triangles(triangle_buffer, triangle_count, p3dc_matrix_buffer)-&gt;TLID</help>
+          <returnType>2</returnType>
+          <argCount>3</argCount>
+          <args>
+            <arg>2</arg>
+            <arg>2</arg>
+            <arg>2</arg>
+          </args>
+        </function>
+      </functions>
       <constants/>
     </file>
   </files>

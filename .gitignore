@@ -2,6 +2,7 @@
 */Configs/*/*
 */extensions/*/*.cpp
 */extensions/*/*.dll
+*.gmx/#backups/
 */Release/
 Release/
 export/*.gmez

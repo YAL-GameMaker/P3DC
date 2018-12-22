@@ -878,8 +878,7 @@ struct p3dc_matrix {
 	double xz, yz, zz, pz;
 	double size;
 };
-/// -> TLID
-export double p3dc_add_triangles(p3dc_add_triangles_data* triangles_address, double num_triangles, p3dc_matrix* matrix_address) {
+export double p3dc_add_triangles_raw(p3dc_add_triangles_data* triangles_address, double num_triangles, p3dc_matrix* matrix_address) {
 	int countvertex = 0;
 	unsigned int tlid = temp_vector.size();
 	int n = (int)num_triangles;
