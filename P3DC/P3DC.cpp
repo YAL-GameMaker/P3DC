@@ -79,6 +79,8 @@ char bytes[128];
 
 //Pre-Processors
 #define export extern "C" __declspec(dllexport)
+#define trace(...) { printf("[P3DC:%d] ", __LINE__); printf(__VA_ARGS__); printf("\n"); fflush(stdout); }
+
 #define FABS(x) ((double)fabs(x))
 #define EPSILON 0.000001
 #define CROSS(dest,v1,v2)                      \
@@ -326,6 +328,12 @@ inline void calc_normals(double x1, double y1, double z1, double x2, double y2, 
 	normaly /= m;
 	normalz /= m;
 }
+bool p3dc_debug_log_triangles = false;
+///
+export double p3dc_debug_set_log_triangles(double enable) {
+	p3dc_debug_log_triangles = enable > 0.5;
+	return true;
+}
 //Add a Triangle (model add triangle
 void mat(double x1, double y1, double z1, double x2, double y2, double z2, double x3, double y3, double z3) {
 	//[X1,Y1,Z1,X2,Y2,Z2,X3,Y3,Z3]
@@ -343,6 +351,26 @@ void mat(double x1, double y1, double z1, double x2, double y2, double z2, doubl
 	temp_vector.push_back(normaly);
 	temp_vector.push_back(normalz);
 	temp_vector.push_back(addingtriangleid);
+	if (p3dc_debug_log_triangles) trace("+triangle [[%lf,%lf,%lf], [%lf,%lf,%lf], [%lf,%lf,%lf]] normal=[%lf,%lf,%lf] ID=%lf",
+		x1, y1, z1, x2, y2, z2, x3, y3, z3, normalx, normaly, normalz, addingtriangleid);
+}
+void matn(double x1, double y1, double z1, double x2, double y2, double z2, double x3, double y3, double z3,
+	double nx, double ny, double nz) {
+	temp_vector.push_back(x1);
+	temp_vector.push_back(y1);
+	temp_vector.push_back(z1);
+	temp_vector.push_back(x2);
+	temp_vector.push_back(y2);
+	temp_vector.push_back(z2);
+	temp_vector.push_back(x3);
+	temp_vector.push_back(y3);
+	temp_vector.push_back(z3);
+	temp_vector.push_back(nx);
+	temp_vector.push_back(ny);
+	temp_vector.push_back(nz);
+	temp_vector.push_back(addingtriangleid);
+	if (p3dc_debug_log_triangles) trace("+triangle [[%lf,%lf,%lf], [%lf,%lf,%lf], [%lf,%lf,%lf]] normal=[%lf,%lf,%lf] ID=%lf",
+		x1, y1, z1, x2, y2, z2, x3, y3, z3, nx, ny, nz, addingtriangleid);
 }
 /// -> total number of models
 export double p3dc_get_models() {//Get # of Model models (Get Model Number)
@@ -898,14 +926,55 @@ export double p3dc_add_triangles_raw(p3dc_add_triangles_data* triangles_address,
 			tx1*mxx + ty1*myx + tz1*mzx + mpx,
 			tx1*mxy + ty1*myy + tz1*mzy + mpy,
 			tx1*mxz + ty1*myz + tz1*mzz + mpz,
-			tx2*mxx + ty2*myx + tz1*mzx + mpx,
-			tx2*mxy + ty2*myy + tz1*mzy + mpy,
-			tx2*mxz + ty2*myz + tz1*mzz + mpz,
-			tx3*mxx + ty3*myx + tz1*mzx + mpx,
-			tx3*mxy + ty3*myy + tz1*mzy + mpy,
-			tx3*mxz + ty3*myz + tz1*mzz + mpz
+			tx2*mxx + ty2*myx + tz2*mzx + mpx,
+			tx2*mxy + ty2*myy + tz2*mzy + mpy,
+			tx2*mxz + ty2*myz + tz2*mzz + mpz,
+			tx3*mxx + ty3*myx + tz3*mzx + mpx,
+			tx3*mxy + ty3*myy + tz3*mzy + mpy,
+			tx3*mxz + ty3*myz + tz3*mzz + mpz
 		);
 		buf.skip(sizeof(p3dc_add_triangles_data));
+	}
+	return (double)tlid;
+}
+struct p3dc_add_triangles_normals_data {
+	double x1, y1, z1;
+	double x2, y2, z2;
+	double x3, y3, z3;
+	double nx, ny, nz;
+};
+export double p3dc_add_triangles_normals_raw(p3dc_add_triangles_normals_data* triangles_address, double num_triangles, p3dc_matrix* matrix_address) {
+	int countvertex = 0;
+	unsigned int tlid = temp_vector.size();
+	int n = (int)num_triangles;
+	//
+	p3dc_matrix* m = matrix_address;
+	double mxx = m->xx, myx = m->yx, mzx = m->zx, mpx = m->px;
+	double mxy = m->xy, myy = m->yy, mzy = m->zy, mpy = m->py;
+	double mxz = m->xz, myz = m->yz, mzz = m->zz, mpz = m->pz;
+	//
+	buffer buf(triangles_address);
+	for (int i = 0; i < n; i++) {
+		p3dc_add_triangles_normals_data* tri = buf.ptr<p3dc_add_triangles_normals_data>();
+		double tx1 = tri->x1, ty1 = tri->y1, tz1 = tri->z1;
+		double tx2 = tri->x2, ty2 = tri->y2, tz2 = tri->z2;
+		double tx3 = tri->x3, ty3 = tri->y3, tz3 = tri->z3;
+		double txn = tri->nx, tyn = tri->ny, tzn = tri->nz;
+		matn(
+			tx1*mxx + ty1*myx + tz1*mzx + mpx,
+			tx1*mxy + ty1*myy + tz1*mzy + mpy,
+			tx1*mxz + ty1*myz + tz1*mzz + mpz,
+			tx2*mxx + ty2*myx + tz2*mzx + mpx,
+			tx2*mxy + ty2*myy + tz2*mzy + mpy,
+			tx2*mxz + ty2*myz + tz2*mzz + mpz,
+			tx3*mxx + ty3*myx + tz3*mzx + mpx,
+			tx3*mxy + ty3*myy + tz3*mzy + mpy,
+			tx3*mxz + ty3*myz + tz3*mzz + mpz,
+			txn*mxx + tyn*myx + tzn*mzx,
+			txn*mxy + tyn*myy + tzn*mzy,
+			txn*mxz + tyn*myz + tzn*mzz
+		);
+		buf.skip(sizeof(p3dc_add_triangles_normals_data));
 	}
 	return (double)tlid;
 }
