@@ -1,0 +1,16 @@
+Converting GML script: ${project_dir}\scripts\trace\trace.gml
+Converted description /// @description  trace(...)/// @param ...
+
+Font fnt_test has been converted to font family Ubuntu Condensed SemiItalic (Regular)
+GameMaker Studio 1 font texture has been backed up at ${project_dir}\fonts\fnt_test\fnt_test.gms1.png
+Converting GML script: P3DC.gml
+Converted description /// @description  (triangle_buffer, triangle_count, p3dc_matrix_buffer)->TLID/// @param triangle_buffer
+/// @param  triangle_count
+/// @param  p3dc_matrix_buffer
+
+Converting GML script: P3DC.gml
+Converted description /// @description  (triangle_normal_buffer, triangle_count, p3dc_matrix_buffer)->TLID/// @param triangle_normal_buffer
+/// @param  triangle_count
+/// @param  p3dc_matrix_buffer
+
+Game speed set to 30

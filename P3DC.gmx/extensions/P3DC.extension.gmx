@@ -60,7 +60,7 @@
           <name>p3dc_get_models</name>
           <externalName>p3dc_get_models</externalName>
           <kind>1</kind>
-          <help>p3dc_get_models() -&gt; total number of models</help>
+          <help>p3dc_get_models()-&gt; total number of models</help>
           <returnType>2</returnType>
           <argCount>0</argCount>
           <args/>
@@ -69,7 +69,7 @@
           <name>p3dc_get_triangles</name>
           <externalName>p3dc_get_triangles</externalName>
           <kind>1</kind>
-          <help>p3dc_get_triangles(model_id) -&gt; number of polygons in model</help>
+          <help>p3dc_get_triangles(model_id)-&gt; number of polygons in model</help>
           <returnType>2</returnType>
           <argCount>1</argCount>
           <args>
@@ -80,7 +80,7 @@
           <name>p3dc_get_splitid</name>
           <externalName>p3dc_get_splitid</externalName>
           <kind>1</kind>
-          <help>p3dc_get_splitid(arg0, arg1) -&gt; id of the split model at X,Y</help>
+          <help>p3dc_get_splitid(arg0, arg1)-&gt; id of the split model at X,Y</help>
           <returnType>2</returnType>
           <argCount>2</argCount>
           <args>
@@ -92,7 +92,7 @@
           <name>p3dc_triangle_data</name>
           <externalName>p3dc_triangle_data</externalName>
           <kind>1</kind>
-          <help>p3dc_triangle_data(index) -&gt; </help>
+          <help>p3dc_triangle_data(index)-&gt; </help>
           <returnType>2</returnType>
           <argCount>1</argCount>
           <args>
@@ -103,7 +103,7 @@
           <name>p3dc_get_lastmask</name>
           <externalName>p3dc_get_lastmask</externalName>
           <kind>1</kind>
-          <help>p3dc_get_lastmask() -&gt; mask of last triangle hit (by a ray, using one of the raycasting functions)</help>
+          <help>p3dc_get_lastmask()-&gt; mask of last triangle hit (by a ray, using one of the raycasting functions)</help>
           <returnType>2</returnType>
           <argCount>0</argCount>
           <args/>
@@ -112,7 +112,7 @@
           <name>p3dc_begin_model</name>
           <externalName>p3dc_begin_model</externalName>
           <kind>1</kind>
-          <help>p3dc_begin_model() -&gt; model_id</help>
+          <help>p3dc_begin_model()-&gt; model_id</help>
           <returnType>2</returnType>
           <argCount>0</argCount>
           <args/>
@@ -121,7 +121,7 @@
           <name>p3dc_begin_replace</name>
           <externalName>p3dc_begin_replace</externalName>
           <kind>1</kind>
-          <help>p3dc_begin_replace(model_id) -&gt; model_id</help>
+          <help>p3dc_begin_replace(model_id)-&gt; model_id</help>
           <returnType>2</returnType>
           <argCount>1</argCount>
           <args>
@@ -132,7 +132,7 @@
           <name>p3dc_end_model</name>
           <externalName>p3dc_end_model</externalName>
           <kind>1</kind>
-          <help>p3dc_end_model() -&gt; number of triangles</help>
+          <help>p3dc_end_model()-&gt; number of triangles</help>
           <returnType>2</returnType>
           <argCount>0</argCount>
           <args/>
@@ -141,7 +141,7 @@
           <name>p3dc_end_replace</name>
           <externalName>p3dc_end_replace</externalName>
           <kind>1</kind>
-          <help>p3dc_end_replace() -&gt; success? (always)</help>
+          <help>p3dc_end_replace()-&gt; success? (always)</help>
           <returnType>2</returnType>
           <argCount>0</argCount>
           <args/>
@@ -177,7 +177,7 @@
           <name>p3dc_add_triangle</name>
           <externalName>p3dc_add_triangle</externalName>
           <kind>1</kind>
-          <help>p3dc_add_triangle(x1, y1, z1, x2, y2, z2, x3, y3, z3) -&gt; triangle location identifier</help>
+          <help>p3dc_add_triangle(x1, y1, z1, x2, y2, z2, x3, y3, z3)-&gt; triangle location identifier</help>
           <returnType>2</returnType>
           <argCount>9</argCount>
           <args>
@@ -196,7 +196,7 @@
           <name>p3dc_add_wall</name>
           <externalName>p3dc_add_wall</externalName>
           <kind>1</kind>
-          <help>p3dc_add_wall(arg0, arg1, arg2, arg3, arg4, arg5) -&gt; triangle location identifier</help>
+          <help>p3dc_add_wall(arg0, arg1, arg2, arg3, arg4, arg5)-&gt; triangle location identifier</help>
           <returnType>2</returnType>
           <argCount>6</argCount>
           <args>
@@ -212,7 +212,7 @@
           <name>p3dc_add_floor</name>
           <externalName>p3dc_add_floor</externalName>
           <kind>1</kind>
-          <help>p3dc_add_floor(arg0, arg1, arg2, arg3, arg4, arg5) -&gt; triangle location identifier</help>
+          <help>p3dc_add_floor(arg0, arg1, arg2, arg3, arg4, arg5)-&gt; triangle location identifier</help>
           <returnType>2</returnType>
           <argCount>6</argCount>
           <args>
@@ -228,7 +228,7 @@
           <name>p3dc_add_block</name>
           <externalName>p3dc_add_block</externalName>
           <kind>1</kind>
-          <help>p3dc_add_block(arg0, arg1, arg2, arg3, arg4, arg5) -&gt; triangle location identifier</help>
+          <help>p3dc_add_block(arg0, arg1, arg2, arg3, arg4, arg5)-&gt; triangle location identifier</help>
           <returnType>2</returnType>
           <argCount>6</argCount>
           <args>
@@ -244,7 +244,7 @@
           <name>p3dc_add_cylinder</name>
           <externalName>p3dc_add_cylinder</externalName>
           <kind>1</kind>
-          <help>p3dc_add_cylinder(x1, y1, z1, x2, y2, z2, closed, steps) -&gt; triangle location identifier</help>
+          <help>p3dc_add_cylinder(x1, y1, z1, x2, y2, z2, closed, steps)-&gt; triangle location identifier</help>
           <returnType>2</returnType>
           <argCount>8</argCount>
           <args>
@@ -262,7 +262,7 @@
           <name>p3dc_add_cone</name>
           <externalName>p3dc_add_cone</externalName>
           <kind>1</kind>
-          <help>p3dc_add_cone(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7) -&gt; triangle location identifier</help>
+          <help>p3dc_add_cone(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7)-&gt; triangle location identifier</help>
           <returnType>2</returnType>
           <argCount>8</argCount>
           <args>
@@ -280,7 +280,7 @@
           <name>p3dc_add_model</name>
           <externalName>p3dc_add_model</externalName>
           <kind>1</kind>
-          <help>p3dc_add_model(arg0, arg1, arg2, arg3) -&gt; triangle location identifier</help>
+          <help>p3dc_add_model(arg0, arg1, arg2, arg3)-&gt; triangle location identifier</help>
           <returnType>2</returnType>
           <argCount>4</argCount>
           <args>
@@ -341,7 +341,7 @@
           <name>p3dc_overwrite_triangle</name>
           <externalName>p3dc_overwrite_triangle</externalName>
           <kind>1</kind>
-          <help>p3dc_overwrite_triangle(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8) -&gt;TLID</help>
+          <help>p3dc_overwrite_triangle(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8)-&gt;TLID</help>
           <returnType>2</returnType>
           <argCount>9</argCount>
           <args>
@@ -444,7 +444,7 @@
           <name>p3dc_check</name>
           <externalName>p3dc_check</externalName>
           <kind>1</kind>
-          <help>p3dc_check(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7) -&gt; hit?</help>
+          <help>p3dc_check(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7)-&gt; hit?</help>
           <returnType>2</returnType>
           <argCount>8</argCount>
           <args>
@@ -721,7 +721,7 @@
           <name>p3dc_add_triangles</name>
           <externalName>p3dc_add_triangles</externalName>
           <kind>2</kind>
-          <help>p3dc_add_triangles(triangle_buffer, triangle_count, p3dc_matrix_buffer)-&gt;TLID</help>
+          <help>p3dc_add_triangles(triangle_buffer, triangle_count, p3dc_matrix_buffer)</help>
           <returnType>2</returnType>
           <argCount>3</argCount>
           <args>
@@ -734,7 +734,7 @@
           <name>p3dc_add_triangles_normals</name>
           <externalName>p3dc_add_triangles_normals</externalName>
           <kind>2</kind>
-          <help>p3dc_add_triangles_normals(triangle_normal_buffer, triangle_count, p3dc_matrix_buffer)-&gt;TLID</help>
+          <help>p3dc_add_triangles_normals(triangle_normal_buffer, triangle_count, p3dc_matrix_buffer)</help>
           <returnType>2</returnType>
           <argCount>3</argCount>
           <args>

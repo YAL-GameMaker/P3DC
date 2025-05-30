@@ -1,7 +1,7 @@
 .vs/
 */Configs/*/*
 */extensions/*/*.cpp
-*/extensions/*/*.dll
+#*/extensions/*/*.dll
 *.gmx/#backups/
 */Release/
 Release/
